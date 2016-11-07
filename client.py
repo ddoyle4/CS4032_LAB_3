@@ -13,7 +13,7 @@ port = int(sys.argv[1])
 # connection to hostname on the port.
 s.connect((host, port))                               
 while True:
-    s.send("HELOaskdujhaskdjfhfn\n")
+    s.send("KILL_SERVICE\n")
     # Receive no more than 1024 bytes
     tm = s.recv(1024)                                     
     print("got this:%s"%tm)

@@ -4,10 +4,10 @@ import socket
 import time
 import sys
 import threading
+import re
+import client_handler
+from client_handler import client_h 
 
-#GLOBAL VARIABLES
-#flag for whether or not to kill the main service
-kill_service_value = False
 
 class tcp_server():
 
@@ -27,7 +27,7 @@ class tcp_server():
 				client_socket, client_addr = self.server_socket.accept()      
 				print("servicing new connection")
 				self.pool.submit(
-					client_handler, 
+					launch_client_handler, 
 					client_socket, 
 					client_addr, 
 					self.server_info, 
@@ -39,7 +39,7 @@ class tcp_server():
 
 			#checking if we should kill service as the result of a "KILL_SERVICE" command
 			if kill_service_lock.acquire(False):
-				if kill_service_value:
+				if client_handler.kill_service_value:
 					running = False
 					self.pool.shutdown()
 					print("KILLING SERVICE...")
@@ -70,37 +70,12 @@ class tcp_server():
 		}
 		return server_socket
 
-
-def client_handler(client_socket, client_addr, server_info, lock):
-
-	running = True
-
-	while running:
-		client_msg = client_socket.recv(65536)
-		response = ""
-		#start of command logic
-		if client_msg.startswith("HELO ", 0, 5):
-			response = "%s\nIP:[%s]\nPort:[%s]\nStudent ID:[%s]\n"%(
-				client_msg, 
-				server_info["host"], 
-				server_info["port"],
-				server_info["sid"]
-			)
-		elif client_msg == "KILL_SERVICE\n":
-			print("Kill Service Command!!!")		
-			lock.acquire()
-			global kill_service_value
-			kill_service_value = True
-			lock.release()	
-			running = False
-		else:
-			response = "ERROR: unrecognised command\nGood day to you sir!"
-			running = False
-
-		client_socket.send(response)
-
-	client_socket.close()
+#launches a client handler instance
+def launch_client_handler(client_sock, client_addr, server_info, kill_service_lock):
+    new_client = client_h(client_sock, client_addr, server_info, kill_service_lock)
 
 if __name__ == '__main__':
-    server = tcp_server(int(sys.argv[1]), 5, 2)
-    server.serve()
+    s = tcp_server(int(sys.argv[1]), 5)
+    s.serve()
+
+
