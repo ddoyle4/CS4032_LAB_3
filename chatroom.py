@@ -33,7 +33,7 @@ class chatroom_manager:
         join_message = "--|>%s has joined the room, say hello guys!"%client_handle
         room = self.rooms[room_name]
         room.add_new_message(client_handle, client_id, client_msg_string)
-        return (room.room_ref, room.room_condition)
+        return (room.room_name, room.room_record_count)
 
 class chatroom:
 
