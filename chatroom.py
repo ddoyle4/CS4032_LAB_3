@@ -9,7 +9,7 @@ class chatroom_manager:
     def __init__(self):
         self.rooms = {}
         self.room_count = 0
-        self.manager_lock = Lock()
+        self.manager_lock = threading.Lock()
 
     def add_new_message(self, room_name, client_handle, client_id, client_msg_string):
         self.rooms[room_name].add_new_message(client_handle, client_id, client_msg_string)
@@ -23,21 +23,23 @@ class chatroom_manager:
         Alerts room of new member. Returns tuple containing room reference and room condition
         for the client to wait on
         """
+        print "JOINININ"
         #if room doesn't exist - create it
         self.manager_lock.acquire()
         if room_name not in self.rooms:
+            print "creating room %s"%room_name
             self.rooms[room_name] = chatroom(room_name, self.room_count)
             self.room_count += 1
         self.manager_lock.release()
 
         join_message = "--|>%s has joined the room, say hello guys!"%client_handle
         room = self.rooms[room_name]
-        room.add_new_message(client_handle, client_id, client_msg_string)
-        return (room.room_name, room.room_record_count)
+        room.add_new_message(client_handle, client_id, join_message)
+        return (room.room_name, room.room_ref, room.room_record_count)
 
 class chatroom:
 
-    def __init__(self, room_name, room_ref)
+    def __init__(self, room_name, room_ref):
         self.room_name = room_name
         self.room_ref = room_ref
         self.room_record = []
@@ -45,10 +47,14 @@ class chatroom:
         self.room_condition = Condition()
 
 
-    def add_new_message(self, client_handle, client_id, client_msg_string)
+    def test(self):
+        print "im alive"
+
+    def add_new_message(self, client_handle, client_id, client_msg_string):
         """
         Adds a new message to the chat room - operation is atomic
         """
+        print "adding new messagfe"
         new_message = message(client_handle, client_id, client_msg_string, self.room_record_count)
 
         self.room_condition.acquire()       #SAFE SECTION START#
@@ -59,7 +65,7 @@ class chatroom:
         self.room_condition.release()       #SAFE SECTION END#
 
 
-    def get_new_messages(self, starting_id)
+    def get_new_messages(self, starting_id):
         """
         Returns a list of messages from the starting_id to the current count 
         operation is atomic
@@ -68,13 +74,13 @@ class chatroom:
         """
         messages = []
 
-        self.room_condition_acquire()       #SAFE SECTION START#
+        self.room_condition.acquire()       #SAFE SECTION START#
         
         #will wait here until starting_id < room_record_count - as notified
         while starting_id > self.room_record_count:
             self.room_condition.wait()
 
-        for i in range(i, len(self.room_record_count)):
+        for i in range(starting_id, self.room_record_count):
             messages.append(self.room_record[i])
 
         self.room_condition.release()       #SAFE SECTION END#
@@ -82,10 +88,10 @@ class chatroom:
         return messages
 
 class message:
-    def __init__(self, client_handle, client_id, client_msg_string, count)
+    def __init__(self, client_handle, client_id, client_msg_string, count):
         self.client_handle = client_handle
         self.client_id = client_id
-        self.client_msg_value = client_msg_string
+        self.client_msg_value = client_msg_string + "\n\n"
         self.client_msg_time = datetime.datetime.now()
         self.client_msg_id = count
 

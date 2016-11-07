@@ -1,4 +1,5 @@
 import threading
+import re
 
 #GLOBAL VARIABLES
 #flag for whether or not to kill the main service
@@ -12,7 +13,7 @@ class client_h:
     def __init__(self, client_id, client_socket, client_addr, server_info, lock, cr_handler):
         self.cr_handler = cr_handler            #master chatroom manager
         self.client_socket = client_socket      #client socket connection
-        self.client_socket_wlock = Lock()       #write lock client socket
+        self.client_socket_wlock = threading.Lock()       #write lock client socket
         self.global_variables_lock = lock       #write lock global data
         self.server_info = server_info
         self.client_addr = client_addr
@@ -20,10 +21,12 @@ class client_h:
         #client can subscribe to listen to a number of chat rooms - these are
         #handled concurrently. Threads saved to listening_services
         self.listening_services = []        
+        self.listening_serices_lock = threading.Lock()
 
         self.client_id = client_id              #unique int identifier
+        self.client_addr = client_addr
         self.running = True
-        self.run(client_addr)      #run service
+        self.run()      #run service
 
     def run(self):
     
@@ -35,12 +38,13 @@ class client_h:
                 if client_msg.startswith("HELO ", 0, 5):
                     response = self.process_helo_command(client_msg)
                 elif client_msg == "KILL_SERVICE\n":
-                    response = process_kill_service_command()
+                    response = self.process_kill_service_command()
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
-                    response = self.parseChatCommand(client_msg)
+                    args = self.parseChatCommand(client_msg)
+                    response = self.process_join_command(args)
                 else:
                     response = "ERROR: unrecognised command\nGood day to you sir!"
-                    self.running = False
+                    #self.running = False
 
                 self.send_to_client(response)
 
@@ -60,12 +64,13 @@ class client_h:
         self.running = False
 
         #kill all listening services
-        for thread in self.listening_services:
-            thread.exit()
+        with self.listening_serices_lock:
+            for thread in self.listening_services:
+                thread.exit()
 
 
     def process_helo_command(self, client_msg):
-        response = "%s\nIP:[%s]\nPort:[%s]\nStudent ID:[%s]\n"%(
+        response = "%sIP:[%s]\nPort:[%s]\nStudent ID:[%s]\n"%(
                 client_msg, 
                 self.server_info["host"], 
                 self.server_info["port"],
@@ -76,17 +81,20 @@ class client_h:
     def process_join_command(self, args):
 
         #join the chatroom
-        (name, count) = self.cr_handler.join_room(
+        print "processing join command"
+        (name, ref, count) = self.cr_handler.join_room(
                 args["JOIN_CHATROOM"], 
+                args["CLIENT_NAME"],
                 self.client_id)
 
         #start a listening service
         new_count = count - 1       
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
-                args=(name, new_count)).start()
+                args=(ref, name, new_count)).start()
 
-        self.listening_services.append(new_listening_service)
+        with self.listening_serices_lock:
+            self.listening_services.append(new_listening_service)
         #TODO create proper return string
         return ""
 
@@ -96,7 +104,7 @@ class client_h:
         self.client_socket.send(msg)
         self.client_socket_wlock.release()
 
-    def listen_to_chatroom(self, room_name, starting_id)
+    def listen_to_chatroom(self, room_ref, room_name, starting_id):
         """
         To be spawned in new thread
         Simply listens to all chat room messages and reports back to client,
@@ -107,6 +115,18 @@ class client_h:
         while running:
            messages = self.cr_handler.get_new_messages(room_name, current_id)
            current_id += len(messages)
+
+           #NOTE - sending each message individually like this would be wasteful if there
+           #were many messages here, but there should usually only be 1
+
+           for message in messages:
+               command = {
+                        "CHAT": room_ref,
+                        "CLIENT_NAME": message.client_handle,
+                        "MESSAGE": message.client_msg_value
+                       }
+               response = self.generateChatCommand(command)
+               self.send_to_client(response)
 
             
 
@@ -124,7 +144,7 @@ class client_h:
     def generateChatCommand(self, command_dict):
         command_string = ""
         for key, value in command_dict.iteritems():
-            command_string += key + ": ["
-            command_string += value + "]\n"
+            command_string += str(key) + ": ["
+            command_string += str(value) + "]\n"
         return command_string
 

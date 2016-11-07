@@ -10,14 +10,26 @@ host = "localhost"
 
 port = int(sys.argv[1])
 
+hello="HELO text\n"
+kill="KILL_SERVICE\n"
+join="JOIN_CHATROOM: [mychatroom]\nCLIENT_IP: [0]\nPORT: [0]\nCLIENT_NAME: [davetherave]\n"
+
+
 # connection to hostname on the port.
 s.connect((host, port))                               
 while True:
-    s.send("KILL_SERVICE\n")
-    # Receive no more than 1024 bytes
+    cmd = raw_input(">")
+    if cmd == "h":
+        s.send(hello)
+    elif cmd == "k":
+        s.send(kill)
+    elif cmd == "j":
+        s.send(join)
+    elif cmd== "n":
+        pass
+
     tm = s.recv(1024)                                     
-    print("got this:%s"%tm)
-    time.sleep(3)
+    print("got this:\n%s"%tm)
 
 s.close()
 

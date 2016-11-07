@@ -29,7 +29,7 @@ class tcp_server():
 
 			try:    #accept only if there is something to accept
 				client_socket, client_addr = self.server_socket.accept()      
-                                new_client_id = get_new_client_id()
+                                new_client_id = self.get_new_client_id()
 				print("servicing new connection")
 				self.pool.submit(
 					launch_client_handler, 
@@ -37,7 +37,7 @@ class tcp_server():
 					client_socket, 
 					client_addr, 
 					self.server_info, 
-					global_variables_lock,
+					self.global_variables_lock,
                                         self.chatroom_manager
 				)
 			except IOError as e:  # otherwise just noop
@@ -82,7 +82,6 @@ class tcp_server():
         def get_new_client_id(self):
             new_id = 0
             with self.global_variables_lock:
-                global client_handler.master_client_id
                 client_handler.master_client_id += 1
                 new_id = client_handler.master_client_id
 
