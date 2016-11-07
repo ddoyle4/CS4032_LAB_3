@@ -1,5 +1,6 @@
 import threading
 import re
+import collections
 
 #GLOBAL VARIABLES
 #flag for whether or not to kill the main service
@@ -88,15 +89,24 @@ class client_h:
                 self.client_id)
 
         #start a listening service
-        new_count = count - 1       
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
-                args=(ref, name, new_count)).start()
+                args=(ref, name, count)).start()
 
+        #register listening service
         with self.listening_serices_lock:
             self.listening_services.append(new_listening_service)
-        #TODO create proper return string
-        return ""
+
+        #formulate correct response
+        response_dict = collections.OrderedDict()
+
+        response_dict["JOINED_CHATROOM"] = name
+        response_dict["SERVER_IP"] = self.server_info["host"]
+        response_dict["PORT"] = self.server_info["port"]
+        response_dict["ROOM_REF"] = ref
+        response_dict["JOIN_ID"] = self.client_id
+
+        return self.generateChatCommand(response_dict)
 
 
     def send_to_client(self, msg):
@@ -110,23 +120,25 @@ class client_h:
         Simply listens to all chat room messages and reports back to client,
         starting from starting_id
         """
+        
         running = True
         current_id = starting_id
         while running:
-           messages = self.cr_handler.get_new_messages(room_name, current_id)
-           current_id += len(messages)
+            messages = self.cr_handler.get_new_messages(room_name, current_id)
+            current_id += len(messages)
 
-           #NOTE - sending each message individually like this would be wasteful if there
-           #were many messages here, but there should usually only be 1
+            #NOTE - sending each message individually like this would be wasteful if there
+            #were many messages here, but there should usually only be 1
 
-           for message in messages:
-               command = {
-                        "CHAT": room_ref,
-                        "CLIENT_NAME": message.client_handle,
-                        "MESSAGE": message.client_msg_value
-                       }
-               response = self.generateChatCommand(command)
-               self.send_to_client(response)
+            for message in messages:
+                command = collections.OrderedDict()
+                
+                command["CHAT"] = room_ref
+                command["CLIENT_NAME"] =  message.client_handle
+                command["MESSAGE"] = message.client_msg_value
+
+                response = self.generateChatCommand(command)
+                self.send_to_client(response)
 
             
 
