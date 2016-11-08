@@ -1,4 +1,5 @@
 import threading
+import random
 import re
 import collections
 import time
@@ -23,7 +24,10 @@ class client_h:
 
         #client can subscribe to listen to a number of chat rooms - these are
         #handled concurrently. Threads saved to listening_services
-        self.listening_services = []        
+        # thread saved in a dict pointed to by the room name
+        # format:
+        #   room : {Thread service_thread}
+        self.listening_services = {}           
         self.listening_serices_lock = threading.Lock()
 
         self.client_id = client_id              #unique int identifier
@@ -51,6 +55,9 @@ class client_h:
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_leave_command(args)
+                elif client_msg.startswith("CHAT", 0, 4):
+                    args = self.parseChatCommand(client_msg)
+                    response = self.process_chat_command(args)
                 else:
                     response = "ERROR: unrecognised command\nGood day to you sir!"
                     #self.running = False
@@ -61,18 +68,52 @@ class client_h:
                     #should sleep when not working
                     time.sleep(0.05)   
         
-        print "killing client"
         self.client_socket.close()
 
+
+    def process_chat_command(self, args):
+        print "start new chat command"
+        room_name = self.reverse_listening_service_by_ref(int(args["CHAT"]))
+        self.cr_handler.add_new_message(
+                room_name, 
+                args["CLIENT_NAME"], 
+                args["JOIN_ID"], 
+                args["MESSAGE"])
+        print "chat command done"
+        return "OK"
+
+
     def process_leave_command(self, args):
+        """
+        Flushes any messages yet to be delivered to client and
+        removes the listening_service for that client in that room
+        """
+        room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
+        #kill service - NOTE this must be done before messaging room
+        with self.listening_serices_lock:
+            old_value = self.listening_services[room_name]
+            new_value = (old_value[0], old_value[1], False)
+            self.listening_services[room_name] = new_value
+
+        #inform chatroom
+        msg = "%s has left!"%args["CLIENT_NAME"]
+        self.cr_handler.admin_add_new_message(room_name, msg)
         
-
-
         response_dict = collections.OrderedDict()
         response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         response_dict["JOIN_ID"] = args["JOIN_ID"]
-
         return self.generateChatCommand(response_dict)
+
+    def reverse_listening_service_by_ref(self, ref):
+        """
+        returns the room name based on the room ref
+        """
+        thread = None
+        for key, value in self.listening_services.iteritems():
+            if value[0] == ref:
+                return key
+
+        return thread
 
     def process_kill_service_command(self):
         print("Kill Service Command!!!")		
@@ -84,7 +125,6 @@ class client_h:
             global kill_service_value
             kill_service_value = True
 
-        print "returning kill"
         return "KILLING"
 
     def kill_service(self):
@@ -112,21 +152,18 @@ class client_h:
     def process_join_command(self, args):
 
         #join the chatroom
-        print "processing join command"
         (name, ref, count) = self.cr_handler.join_room(
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"],
                 self.client_id)
-
-        new_count = count + 1
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
-                args=(ref, name, count)).start()
+                args=(ref, name, count, args["CLIENT_NAME"])).start()
 
         #register listening service
         with self.listening_serices_lock:
-            self.listening_services.append(new_listening_service)
+            self.listening_services[name] = (int(ref), new_listening_service, True)
 
         #formulate correct response
         response_dict = collections.OrderedDict()
@@ -145,7 +182,7 @@ class client_h:
         self.client_socket.send(msg)
         self.client_socket_wlock.release()
 
-    def listen_to_chatroom(self, room_ref, room_name, starting_id):
+    def listen_to_chatroom(self, room_ref, room_name, starting_id, name):
         """
         To be spawned in new thread
         Simply listens to all chat room messages and reports back to client,
@@ -155,21 +192,37 @@ class client_h:
         running = True
         current_id = starting_id
 
+        blah = random.randint(1,100) 
         while running:
-            messages = self.cr_handler.get_new_messages(room_name, current_id)
+            #old count 1 after set up
+            messages = self.cr_handler.get_new_messages(room_name, current_id, blah, name)
             current_id += len(messages)
-            #NOTE - sending each message individually like this would be wasteful if there
-            #were many messages here, but there should usually only be 1
+            
+            if name == "davetherave":
+                print "ltc: got ", len(messages), " new id ", current_id
+            #check if leaving service first
+            with self.listening_serices_lock:
+                if not self.listening_services[room_name][2]:
+                    running = False
 
-            for message in messages:
-                command = collections.OrderedDict()
-                
-                command["CHAT"] = room_ref
-                command["CLIENT_NAME"] =  message.client_handle
-                command["MESSAGE"] = message.client_msg_value
+            if name == "davetherave":
+                print "not going to stop"
 
-                response = self.generateChatCommand(command)
-                self.send_to_client(response)
+            if running:        
+                #NOTE - sending each message individually like this would be wasteful if there
+                #were many messages here, but there should usually only be 1
+                for message in messages:
+                    command = collections.OrderedDict()
+                    
+                    command["CHAT"] = room_ref
+                    command["CLIENT_NAME"] =  message.client_handle
+                    command["MESSAGE"] = message.client_msg_value
+
+                    response = self.generateChatCommand(command)
+                    self.send_to_client(response)
+                    if name == "davetherave":
+                        print "sent response ", response
+
 
     #TODO move these methods to a new class that checks validity of messages
     # and generates an error message if necessary to return to client

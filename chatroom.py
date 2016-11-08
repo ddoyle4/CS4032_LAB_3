@@ -14,16 +14,17 @@ class chatroom_manager:
     def add_new_message(self, room_name, client_handle, client_id, client_msg_string):
         self.rooms[room_name].add_new_message(client_handle, client_id, client_msg_string)
         
-    def get_new_messages(self, room_name, starting_id):
+    def admin_add_new_message(self, room_name, msg):
+        self.rooms[room_name].add_new_message("SERVER ADMIN", "-1", msg)
+
+    def get_new_messages(self, room_name, starting_id, blah, name):
         #TODO add error checking
-        return self.rooms[room_name].get_new_messages(starting_id)
+        return self.rooms[room_name].get_new_messages(starting_id, blah, name)
 
     def join_room(self, room_name, client_handle, client_id):
         """
-        Alerts room of new member. Returns tuple containing room reference and room condition
-        for the client to wait on
+        TODO
         """
-        print "JOINININ"
         #if room doesn't exist - create it
         self.manager_lock.acquire()
         if room_name not in self.rooms:
@@ -66,21 +67,23 @@ class chatroom:
         """
         Adds a new message to the chat room - operation is atomic
         """
-        print "adding new messagfe"
         new_message = message(client_handle, client_id, client_msg_string, self.room_record_count)
-
         self.room_condition.acquire()       #SAFE SECTION START#
 
         self.room_record.append(new_message)
         self.room_record_count += 1
+        print "------------"
+        print self.room_record
+        print self.room_record_count
+        print "\n\n"
 
-        self.room_condition.notify()
+        self.room_condition.notifyAll()
         self.room_condition.release()       #SAFE SECTION END#
 
     def kill_room(self):
         self.room_is_active = False
 
-    def get_new_messages(self, starting_id):
+    def get_new_messages(self, starting_id, blah, name):
         """
         Returns a list of messages from the starting_id to the current count 
         operation is atomic
@@ -94,7 +97,11 @@ class chatroom:
         
         #will wait here until running_id < room_record_count - as notified
         while (running_id >= self.room_record_count) and self.room_is_active:
+            if name == "davetherave":
+                print "before wait"
             self.room_condition.wait()
+            if name == "davetherave":
+                print "passed wait id ", running_id, " count ", self.room_record_count 
 
         for i in range(running_id, self.room_record_count):
             messages.append(self.room_record[i])
