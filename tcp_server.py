@@ -42,18 +42,19 @@ class tcp_server():
 				)
 			except IOError as e:  # otherwise just noop
 				if e.errno == errno.EWOULDBLOCK:
-					pass
+                                        #should sleep when not working
+			                time.sleep(0.001)   
 
 			#checking if we should kill service as the result of a "KILL_SERVICE" command
 			if self.global_variables_lock.acquire(False):
                             try:
-				if client_handler.kill_service_value:
+				if client_handler.kill_service_value == True:
 					running = False
-					self.pool.shutdown()
+					self.pool.shutdown(wait=False)
 					print("KILLING SERVICE...")
                             finally:
 				self.global_variables_lock.release()
-				
+
 
 		self.server_socket.close()
 		print("Server has been shut down")

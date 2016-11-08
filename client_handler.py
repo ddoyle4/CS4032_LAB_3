@@ -48,7 +48,8 @@ class client_h:
                     #self.running = False
 
                 self.send_to_client(response)
-
+        
+        print "killing client"
         self.client_socket.close()
 
     def process_kill_service_command(self):
@@ -60,6 +61,9 @@ class client_h:
         with self.global_variables_lock:
             global kill_service_value
             kill_service_value = True
+
+        print "returning kill"
+        return "KILLING"
 
     def kill_service(self):
         self.running = False
@@ -126,7 +130,7 @@ class client_h:
         while running:
             messages = self.cr_handler.get_new_messages(room_name, current_id)
             current_id += len(messages)
-
+            print "listineg"
             #NOTE - sending each message individually like this would be wasteful if there
             #were many messages here, but there should usually only be 1
 
@@ -139,8 +143,6 @@ class client_h:
 
                 response = self.generateChatCommand(command)
                 self.send_to_client(response)
-
-            
 
     def parseChatCommand(self, command):
         regex = "([A-Za-z0-9\-\_]+)\:\ \[([A-Za-z0-9\-\_\ ]+)\]"
