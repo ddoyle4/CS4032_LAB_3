@@ -28,7 +28,10 @@ while True:
     elif cmd== "n":
         pass
 
-    tm = s.recv(1024)                                     
+    try:
+        tm = s.recv(1024)                                     
+    except e:
+        print e
     print("got this:\n%s"%tm)
 
 s.close()

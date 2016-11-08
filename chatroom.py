@@ -44,6 +44,7 @@ class chatroom_manager:
         """
         with self.manager_lock:
             for name, room in self.rooms.iteritems():
+                room.add_new_message("SERVER ADMIN", "-1", "WE'RE GOING DOWN!")
                 try:
                     room.room_condition.acquire()
                     room.kill_room()

@@ -34,11 +34,10 @@ class client_h:
     def run(self):
     
         while self.running:
+            self.check_for_kill_signal()
             try: #process client message if present
                  
                 client_msg = self.client_socket.recv(65536)
-                #TODO - could thread this - be notified on condition
-                self.check_for_kill_signal()
                 response = ""
 
                 #TODO better regex checking
@@ -49,6 +48,9 @@ class client_h:
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
+                elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
+                    args = self.parseChatCommand(client_msg)
+                    response = self.process_leave_command(args)
                 else:
                     response = "ERROR: unrecognised command\nGood day to you sir!"
                     #self.running = False
@@ -57,10 +59,20 @@ class client_h:
             except IOError as e:  # otherwise just sleep for a while
                 if e.errno == 11:
                     #should sleep when not working
-                    time.sleep(0.001)   
+                    time.sleep(0.05)   
         
         print "killing client"
         self.client_socket.close()
+
+    def process_leave_command(self, args):
+        
+
+
+        response_dict = collections.OrderedDict()
+        response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
+        response_dict["JOIN_ID"] = args["JOIN_ID"]
+
+        return self.generateChatCommand(response_dict)
 
     def process_kill_service_command(self):
         print("Kill Service Command!!!")		
@@ -159,6 +171,8 @@ class client_h:
                 response = self.generateChatCommand(command)
                 self.send_to_client(response)
 
+    #TODO move these methods to a new class that checks validity of messages
+    # and generates an error message if necessary to return to client
     def parseChatCommand(self, command):
         regex = "([A-Za-z0-9\-\_]+)\:\ \[([A-Za-z0-9\-\_\ ]+)\]"
         lines = command.split("\n")
