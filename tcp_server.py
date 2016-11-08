@@ -40,7 +40,7 @@ class tcp_server():
 					self.global_variables_lock,
                                         self.chatroom_manager
 				)
-			except IOError as e:  # otherwise just noop
+			except IOError as e:  # otherwise just sleep for a while
 				if e.errno == errno.EWOULDBLOCK:
                                         #should sleep when not working
 			                time.sleep(0.001)   
@@ -50,6 +50,7 @@ class tcp_server():
                             try:
 				if client_handler.kill_service_value == True:
 					running = False
+                                        self.chatroom_manager.close_all()
 					self.pool.shutdown(wait=False)
 					print("KILLING SERVICE...")
                             finally:

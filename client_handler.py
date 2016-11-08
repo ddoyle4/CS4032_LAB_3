@@ -1,6 +1,7 @@
 import threading
 import re
 import collections
+import time
 
 #GLOBAL VARIABLES
 #flag for whether or not to kill the main service
@@ -14,6 +15,7 @@ class client_h:
     def __init__(self, client_id, client_socket, client_addr, server_info, lock, cr_handler):
         self.cr_handler = cr_handler            #master chatroom manager
         self.client_socket = client_socket      #client socket connection
+        self.client_socket.setblocking(0)       #set the socket to non-blocking
         self.client_socket_wlock = threading.Lock()       #write lock client socket
         self.global_variables_lock = lock       #write lock global data
         self.server_info = server_info
@@ -32,7 +34,11 @@ class client_h:
     def run(self):
     
         while self.running:
+            try: #process client message if present
+                 
                 client_msg = self.client_socket.recv(65536)
+                #TODO - could thread this - be notified on condition
+                self.check_for_kill_signal()
                 response = ""
 
                 #TODO better regex checking
@@ -46,8 +52,12 @@ class client_h:
                 else:
                     response = "ERROR: unrecognised command\nGood day to you sir!"
                     #self.running = False
-
+                
                 self.send_to_client(response)
+            except IOError as e:  # otherwise just sleep for a while
+                if e.errno == 11:
+                    #should sleep when not working
+                    time.sleep(0.001)   
         
         print "killing client"
         self.client_socket.close()
@@ -68,10 +78,14 @@ class client_h:
     def kill_service(self):
         self.running = False
 
-        #kill all listening services
-        with self.listening_serices_lock:
-            for thread in self.listening_services:
-                thread.exit()
+    def check_for_kill_signal(self):
+        """
+        checks if the kill signal has been set and stops client service if
+        it is
+        """
+        with self.global_variables_lock:
+            if kill_service_value:
+                self.running = False
 
 
     def process_helo_command(self, client_msg):
@@ -92,6 +106,7 @@ class client_h:
                 args["CLIENT_NAME"],
                 self.client_id)
 
+        new_count = count + 1
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
@@ -127,10 +142,10 @@ class client_h:
         
         running = True
         current_id = starting_id
+
         while running:
             messages = self.cr_handler.get_new_messages(room_name, current_id)
             current_id += len(messages)
-            print "listineg"
             #NOTE - sending each message individually like this would be wasteful if there
             #were many messages here, but there should usually only be 1
 
