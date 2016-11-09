@@ -58,6 +58,9 @@ class client_h:
                 elif client_msg.startswith("CHAT", 0, 4):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_chat_command(args)
+                elif client_msg.startswith("DISCONNECT", 0, 10):
+                    args = self.parseChatCommand(client_msg)
+                    response = self.process_disconnect_command(args)
                 else:
                     response = "ERROR: unrecognised command\nGood day to you sir!"
                     #self.running = False
@@ -71,17 +74,28 @@ class client_h:
         self.client_socket.close()
 
 
+    def process_disconnect_command(self, args):
+        #kill main thread
+        self.running = False
+        for name, value in self.listening_services.iteritems():
+            self.stop_listening_service(name, args["CLIENT_NAME"])
+        return "OK"
+
+
     def process_chat_command(self, args):
-        print "start new chat command"
         room_name = self.reverse_listening_service_by_ref(int(args["CHAT"]))
         self.cr_handler.add_new_message(
                 room_name, 
                 args["CLIENT_NAME"], 
                 args["JOIN_ID"], 
                 args["MESSAGE"])
-        print "chat command done"
         return "OK"
 
+    def generate_error_message(self, errno, msg):
+        args = collections.OrderedDict()
+        args["ERROR_CODE"] = str(errno)
+        args["ERROR_DESCRIPTION"] = msg
+        return self.generateChatCommand(args)
 
     def process_leave_command(self, args):
         """
@@ -89,20 +103,29 @@ class client_h:
         removes the listening_service for that client in that room
         """
         room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
-        #kill service - NOTE this must be done before messaging room
-        with self.listening_serices_lock:
-            old_value = self.listening_services[room_name]
-            new_value = (old_value[0], old_value[1], False)
-            self.listening_services[room_name] = new_value
-
-        #inform chatroom
-        msg = "%s has left!"%args["CLIENT_NAME"]
-        self.cr_handler.admin_add_new_message(room_name, msg)
+        self.stop_listening_service(room_name, args["CLIENT_NAME"])
         
         response_dict = collections.OrderedDict()
         response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         response_dict["JOIN_ID"] = args["JOIN_ID"]
         return self.generateChatCommand(response_dict)
+
+    def stop_listening_service(self, room_name, client_name):
+        """
+        Stops the listening service for a particular room
+        """
+        redundant_repeat = False
+        with self.listening_serices_lock:
+            if self.listening_services[room_name][2]:
+                old_value = self.listening_services[room_name]
+                new_value = (old_value[0], old_value[1], False)
+                self.listening_services[room_name] = new_value
+            else:
+                redundant_repeat = True
+        #inform chatroom
+        if not redundant_repeat:
+            msg = "%s has left!"%client_name
+            self.cr_handler.admin_add_new_message(room_name, msg)
 
     def reverse_listening_service_by_ref(self, ref):
         """
@@ -156,10 +179,11 @@ class client_h:
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"],
                 self.client_id)
+
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
-                args=(ref, name, count, args["CLIENT_NAME"])).start()
+                args=(ref, name, count)).start()
 
         #register listening service
         with self.listening_serices_lock:
@@ -182,7 +206,7 @@ class client_h:
         self.client_socket.send(msg)
         self.client_socket_wlock.release()
 
-    def listen_to_chatroom(self, room_ref, room_name, starting_id, name):
+    def listen_to_chatroom(self, room_ref, room_name, starting_id):
         """
         To be spawned in new thread
         Simply listens to all chat room messages and reports back to client,
@@ -192,21 +216,15 @@ class client_h:
         running = True
         current_id = starting_id
 
-        blah = random.randint(1,100) 
         while running:
             #old count 1 after set up
-            messages = self.cr_handler.get_new_messages(room_name, current_id, blah, name)
+            messages = self.cr_handler.get_new_messages(room_name, current_id)
             current_id += len(messages)
             
-            if name == "davetherave":
-                print "ltc: got ", len(messages), " new id ", current_id
             #check if leaving service first
             with self.listening_serices_lock:
                 if not self.listening_services[room_name][2]:
                     running = False
-
-            if name == "davetherave":
-                print "not going to stop"
 
             if running:        
                 #NOTE - sending each message individually like this would be wasteful if there
@@ -220,8 +238,6 @@ class client_h:
 
                     response = self.generateChatCommand(command)
                     self.send_to_client(response)
-                    if name == "davetherave":
-                        print "sent response ", response
 
 
     #TODO move these methods to a new class that checks validity of messages

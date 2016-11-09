@@ -22,6 +22,7 @@ kill="KILL_SERVICE\n"
 join="JOIN_CHATROOM: [mychatroom]\nCLIENT_IP: [0]\nPORT: [0]\nCLIENT_NAME: [davetherave]\n"
 leave="LEAVE_CHATROOM: [%s]\nJOIN_ID: [0]\nCLIENT_NAME: [davetherave]\n"
 message = "CHAT: [%s]\nJOIN_ID: [integer identifying client to server]\nCLIENT_NAME: [davetherave]\nMESSAGE: [%s]"
+disconnect = "DISCONNECT: [0]\nPORT: [0]\nCLIENT_NAME: [davetherave]"
 
 # connection to hostname on the port.
 s.connect((host, port))                               
@@ -44,6 +45,8 @@ while True:
         msg = raw_input("message:")
         snd = message%(ref,msg)
         s.send(snd)
+    elif cmd == "q":
+        s.send(disconnect)
     elif cmd== "n":
         pass
 
