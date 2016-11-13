@@ -69,7 +69,6 @@ class client_h:
                     args = self.parseChatCommand(client_msg)
                     response = self.process_disconnect_command(args)
                 else:
-                    print  "ERROR: unrecognised command"
                     response = self.generate_error_message(1, "unrecognised command")
                     respond = True
                     #self.running = False
@@ -117,8 +116,8 @@ class client_h:
         self.stop_listening_service(room_name, args["CLIENT_NAME"])
         
         response_dict = collections.OrderedDict()
-        response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
-        response_dict["JOIN_ID"] = args["JOIN_ID"]
+        response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"].strip()
+        response_dict["JOIN_ID"] = args["JOIN_ID"].strip()
         return self.generateChatCommand(response_dict)
 
     def stop_listening_service(self, room_name, client_name):
@@ -190,12 +189,10 @@ class client_h:
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"],
                 self.client_id)
-        print "ROOOMM  COOUUUNNTTT", count
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
                 args=(ref, name, count)).start()
-        print "fuzzy 1"
         #register listening service
         with self.listening_serices_lock:
             self.listening_services[name] = (int(ref), new_listening_service, True)
@@ -209,7 +206,6 @@ class client_h:
         response_dict["ROOM_REF"] = ref
         response_dict["JOIN_ID"] = self.client_id
 
-        print "fuzzy 2"
         #inform chatroom of new member
         new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
@@ -218,7 +214,6 @@ class client_h:
                 self.client_id, 
                 new_msg)
 
-        print "fuzzy 3"
         return self.generateChatCommand(response_dict)
 
 
