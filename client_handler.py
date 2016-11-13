@@ -164,7 +164,7 @@ class client_h:
 
 
     def process_helo_command(self, client_msg):
-        response = "%sIP:%s\nPort:%s\nStudent ID:%s\n"%(
+        response = "%sIP:%s\nPort:%s\nStudentID:%s\n"%(
                 client_msg, 
                 self.server_info["host"], 
                 self.server_info["port"],
