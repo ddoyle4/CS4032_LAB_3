@@ -190,12 +190,12 @@ class client_h:
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"],
                 self.client_id)
-
+        print "ROOOMM  COOUUUNNTTT", count
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
                 args=(ref, name, count)).start()
-
+        print "fuzzy 1"
         #register listening service
         with self.listening_serices_lock:
             self.listening_services[name] = (int(ref), new_listening_service, True)
@@ -209,6 +209,16 @@ class client_h:
         response_dict["ROOM_REF"] = ref
         response_dict["JOIN_ID"] = self.client_id
 
+        print "fuzzy 2"
+        #inform chatroom of new member
+        new_msg = "%s has joined the room"%args["CLIENT_NAME"] 
+        self.cr_handler.add_new_message(
+                args["JOIN_CHATROOM"], 
+                args["CLIENT_NAME"], 
+                self.client_id, 
+                new_msg)
+
+        print "fuzzy 3"
         return self.generateChatCommand(response_dict)
 
 

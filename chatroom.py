@@ -34,9 +34,9 @@ class chatroom_manager:
         self.manager_lock.release()
 
         #send message to room as server admin
-        join_message = "%s has joined the room, say hello guys!"%client_handle
+        #join_message = "%s has joined the room, say hello guys!"%client_handle
         room = self.rooms[room_name]
-        room.add_new_message("SERVER ADMIN", "-1", join_message)
+        #room.add_new_message(client_handle, client_id, join_message)
         return (room.room_name, room.room_ref, room.room_record_count)
 
     def close_all(self):
