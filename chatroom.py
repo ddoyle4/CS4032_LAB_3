@@ -8,7 +8,7 @@ class chatroom_manager:
 
     def __init__(self):
         self.rooms = {}
-        self.room_count = 0
+        self.room_count = 1
         self.manager_lock = threading.Lock()
 
     def add_new_message(self, room_name, client_handle, client_id, client_msg_string):
