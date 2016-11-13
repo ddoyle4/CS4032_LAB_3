@@ -67,15 +67,15 @@ class tcp_server():
 		"""
 		server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 		#TODO remove this hard coded host in production
-		server_host = "localhost" #socket.gethostname()                           
+		server_host = socket.gethostname()                           
 		server_port = port
 		server_socket.bind((server_host, server_port))                                  
 		server_socket.listen(connQueue)                                           
 		server_socket.setblocking(0)
 
-		#configuration settings for server
+		#configuration settings for this server
 		self.server_info = {
-			"host": str(server_host),
+			"host": socekt.gethostbyname(server_host),
 			"port": str(port),
 			"sid": "11315921"
 		}
