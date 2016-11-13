@@ -75,7 +75,7 @@ class tcp_server():
 
 		#configuration settings for this server
 		self.server_info = {
-			"host": socekt.gethostbyname(server_host),
+			"host": socket.gethostbyname(server_host),
 			"port": str(port),
 			"sid": "11315921"
 		}
