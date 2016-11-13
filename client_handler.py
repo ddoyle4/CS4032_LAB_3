@@ -164,7 +164,7 @@ class client_h:
 
 
     def process_helo_command(self, client_msg):
-        response = "%sIP:[%s]\nPort:[%s]\nStudent ID:[%s]\n"%(
+        response = "%sIP:%s\nPort:%s\nStudent ID:%s\n"%(
                 client_msg, 
                 self.server_info["host"], 
                 self.server_info["port"],
@@ -256,7 +256,7 @@ class client_h:
     def generateChatCommand(self, command_dict):
         command_string = ""
         for key, value in command_dict.iteritems():
-            command_string += str(key) + ": ["
-            command_string += str(value) + "]\n"
+            command_string += str(key) + ": "
+            command_string += str(value) + "\n"
         return command_string
 
