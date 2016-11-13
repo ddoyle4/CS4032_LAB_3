@@ -43,7 +43,8 @@ class client_h:
                  
                 client_msg = self.client_socket.recv(65536)
                 response = ""
-
+                print "new client msg:"
+                print client_msg
                 #TODO better regex checking
                 if client_msg.startswith("HELO ", 0, 5):
                     response = self.process_helo_command(client_msg)
