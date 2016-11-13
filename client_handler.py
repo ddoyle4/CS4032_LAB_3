@@ -70,10 +70,12 @@ class client_h:
                     response = self.process_disconnect_command(args)
                 else:
                     print  "ERROR: unrecognised command"
-                    respond = False
+                    response = self.generate_error_message(1, "unrecognised command")
+                    respond = True
                     #self.running = False
 
                 if respond:
+                    print "sending this to client: ", response
                     self.send_to_client(response)
             except IOError as e:  # otherwise just sleep for a while
                 if e.errno == 11:
