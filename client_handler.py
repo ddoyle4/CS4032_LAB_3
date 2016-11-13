@@ -43,30 +43,38 @@ class client_h:
                  
                 client_msg = self.client_socket.recv(65536)
                 response = ""
+                respond = True
                 print "new client msg:"
                 print client_msg
                 #TODO better regex checking
                 if client_msg.startswith("HELO ", 0, 5):
                     response = self.process_helo_command(client_msg)
+                    respond = True
                 elif client_msg == "KILL_SERVICE\n":
                     response = self.process_kill_service_command()
+                    respond = True
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
+                    respond = True
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_leave_command(args)
+                    respond = True
                 elif client_msg.startswith("CHAT", 0, 4):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_chat_command(args)
+                    respond = True
                 elif client_msg.startswith("DISCONNECT", 0, 10):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_disconnect_command(args)
                 else:
-                    response = "ERROR: unrecognised command\nGood day to you sir!"
+                    print  "ERROR: unrecognised command"
+                    respond = False
                     #self.running = False
-                
-                self.send_to_client(response)
+
+                if respond:
+                    self.send_to_client(response)
             except IOError as e:  # otherwise just sleep for a while
                 if e.errno == 11:
                     #should sleep when not working

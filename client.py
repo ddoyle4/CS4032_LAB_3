@@ -23,6 +23,7 @@ join="JOIN_CHATROOM: mychatroom\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: davetherave
 leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: davetherave\n"
 message = "CHAT: %s\nJOIN_ID: 6666 \nCLIENT_NAME: davetherave\nMESSAGE: %s"
 disconnect = "DISCONNECT: 0\nPORT: 0\nCLIENT_NAME: davetherave"
+anything = "ANYTHING 5828d335af7cc"
 
 # connection to hostname on the port.
 s.connect((host, port))                               
@@ -47,6 +48,8 @@ while True:
         s.send(snd)
     elif cmd == "q":
         s.send(disconnect)
+    elif cmd == "a":
+        s.send(anything)
     elif cmd== "n":
         pass
 
