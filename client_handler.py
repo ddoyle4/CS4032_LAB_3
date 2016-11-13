@@ -254,7 +254,7 @@ class client_h:
     #TODO move these methods to a new class that checks validity of messages
     # and generates an error message if necessary to return to client
     def parseChatCommand(self, command):
-        regex = "([A-Za-z0-9\-\_]+)\:\ ([A-Za-z0-9\-\_\ ]+)"
+        regex = "([A-Za-z0-9\-\_]+)\:([A-Za-z0-9\-\_\ ]+)"
         lines = command.split("\n")
         command_dict = {}
         for line in lines:
