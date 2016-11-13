@@ -68,6 +68,7 @@ class tcp_server():
 		server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 		#TODO remove this hard coded host in production
 		server_host = socket.gethostname()                           
+                print "server_host:", server_host
 		server_port = port
 		server_socket.bind((server_host, server_port))                                  
 		server_socket.listen(connQueue)                                           

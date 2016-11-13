@@ -13,15 +13,15 @@ def read(read_sock):
         print "received:\n%s"%msg
 
 # get local machine name
-host = "localhost"                           
+host = socket.gethostname()                          
 
 port = int(sys.argv[1])
 
 hello="HELO text\n"
 kill="KILL_SERVICE\n"
-join="JOIN_CHATROOM: [mychatroom]\nCLIENT_IP: [0]\nPORT: [0]\nCLIENT_NAME: [andrew]\n"
-leave="LEAVE_CHATROOM: [%s]\nJOIN_ID: [0]\nCLIENT_NAME: [andrew]\n"
-message = "CHAT: [%s]\nJOIN_ID: [integer identifying client to server]\nCLIENT_NAME: [andrew]\nMESSAGE: [%s]"
+join="JOIN_CHATROOM: mychatroom\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: andrew\n"
+leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: andrew\n"
+message = "CHAT: %s\nJOIN_ID: 6667\nCLIENT_NAME: andrew\nMESSAGE: %s"
 
 # connection to hostname on the port.
 s.connect((host, port))                               
