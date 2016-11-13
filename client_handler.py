@@ -211,7 +211,7 @@ class client_h:
 
         print "fuzzy 2"
         #inform chatroom of new member
-        new_msg = "%s has joined the room"%args["CLIENT_NAME"] 
+        new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"], 
