@@ -69,8 +69,8 @@ class client_h:
                     args = self.parseChatCommand(client_msg)
                     response = self.process_disconnect_command(args)
                 else:
-                    response = self.generate_error_message(1, "unrecognised command")
-                    respond = True
+                    #response = self.generate_error_message(1, "unrecognised command")
+                    respond = False
                     #self.running = False
 
                 if respond:
