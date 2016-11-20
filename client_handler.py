@@ -215,8 +215,8 @@ class client_h:
                 args["CLIENT_NAME"], 
                 self.client_id, 
                 new_msg)
-
-        return self.generateChatCommand(response_dict)
+        join_response = self.generateChatCommand(response_dict)[:-1]
+        return join_response
 
 
     def send_to_client(self, msg):
@@ -280,6 +280,5 @@ class client_h:
             clean_value = str(key).strip()
             command_string += str(key) + ":"
             command_string += str(value) + "\n"
-        command_string = command_string[:-1]
         return command_string
 
