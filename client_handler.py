@@ -59,7 +59,7 @@ class client_h:
                     respond = True
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
-                    response = "LEFT_CHATROOM: 1"#self.process_leave_command(args)
+                    response = "LEFT_CHATROOM: 1\n"#self.process_leave_command(args)
                     respond = True
                 elif client_msg.startswith("CHAT", 0, 4):
                     args = self.parseChatCommand(client_msg)
