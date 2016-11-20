@@ -44,8 +44,8 @@ class client_h:
                 client_msg = self.client_socket.recv(65536)
                 response = ""
                 respond = True
-                print "new client msg:"
-                print client_msg
+                print "new client msg:\n----\n%s\n----\n"%(str(client_msg))
+
                 #TODO better regex checking
                 if client_msg.startswith("HELO ", 0, 5):
                     response = self.process_helo_command(client_msg)
@@ -76,7 +76,7 @@ class client_h:
                     #self.running = False
 
                 if respond:
-                    print "sending this to client:\n", response
+                    print "sending this to client:\n----\n%s\n----\n"%(response)
                     self.send_to_client(response)
             except IOError as e:  # otherwise just sleep for a while
                 if e.errno == 11:
@@ -276,7 +276,10 @@ class client_h:
     def generateChatCommand(self, command_dict):
         command_string = ""
         for key, value in command_dict.iteritems():
+            clean_key = str(key).strip()
+            clean_value = str(key).strip()
             command_string += str(key) + ":"
             command_string += str(value) + "\n"
+        command_string = command_string[:-1]
         return command_string
 
