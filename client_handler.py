@@ -118,24 +118,24 @@ class client_h:
         response_dict = collections.OrderedDict()
         response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         response_dict["JOIN_ID"] = args["JOIN_ID"]
-        return (self.generateChatCommand(response_dict)+"\n")
+        return self.generateChatCommand(response_dict)
 
     def stop_listening_service(self, room_name, client_name):
         """
         Stops the listening service for a particular room
         """
-        redundant_repeat = False
         with self.listening_serices_lock:
+            
             if self.listening_services[room_name][2]:
+                #inform chatroom
+                msg = "%s has left!"%client_name
+                self.cr_handler.admin_add_new_message(room_name, msg)
+
+                #stop listening service
                 old_value = self.listening_services[room_name]
                 new_value = (old_value[0], old_value[1], False)
                 self.listening_services[room_name] = new_value
-            else:
-                redundant_repeat = True
-        #inform chatroom
-        if not redundant_repeat:
-            msg = "%s has left!"%client_name
-            self.cr_handler.admin_add_new_message(room_name, msg)
+                time.sleep(1)
 
     def reverse_listening_service_by_ref(self, ref):
         """
@@ -237,10 +237,6 @@ class client_h:
             messages = self.cr_handler.get_new_messages(room_name, current_id)
             current_id += len(messages)
             
-            #check if leaving service first
-            with self.listening_serices_lock:
-                if not self.listening_services[room_name][2]:
-                    running = False
 
             if running:        
                 #NOTE - sending each message individually like this would be wasteful if there
@@ -254,6 +250,11 @@ class client_h:
 
                     response = self.generateChatCommand(command)
                     self.send_to_client(response)
+
+            #check if leaving service
+            with self.listening_serices_lock:
+                if not self.listening_services[room_name][2]:
+                    running = False
 
 
     #TODO move these methods to a new class that checks validity of messages
