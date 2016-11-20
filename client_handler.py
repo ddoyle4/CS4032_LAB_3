@@ -274,7 +274,9 @@ class client_h:
     def generateChatCommand(self, command_dict):
         command_string = ""
         for key, value in command_dict.iteritems():
-            command_string += str(key).strip() + ":"
-            command_string += str(value).strip() + "\n"
+            key_s = str(key)
+            value_s = str(value)
+            command_string += key_s.strip() + ":"
+            command_string += value_s.strip() + "\n"
         return command_string
 
