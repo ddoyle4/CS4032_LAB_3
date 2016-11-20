@@ -135,7 +135,6 @@ class client_h:
                 old_value = self.listening_services[room_name]
                 new_value = (old_value[0], old_value[1], False)
                 self.listening_services[room_name] = new_value
-                time.sleep(1)
 
     def reverse_listening_service_by_ref(self, ref):
         """
