@@ -76,7 +76,7 @@ class client_h:
                     #self.running = False
 
                 if respond:
-                    print "sending this to client:\n----\n%s\n----\n"%(response)
+                    print "sending this to client:\n----\n%s----\n"%(response)
                     self.send_to_client(response)
             except IOError as e:  # otherwise just sleep for a while
                 if e.errno == 11:
@@ -215,8 +215,8 @@ class client_h:
                 args["CLIENT_NAME"], 
                 self.client_id, 
                 new_msg)
-        join_response = self.generateChatCommand(response_dict)[:-1]
-        return join_response
+
+        return self.generateChatCommand(response_dict)
 
 
     def send_to_client(self, msg):
