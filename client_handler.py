@@ -135,6 +135,7 @@ class client_h:
                 old_value = self.listening_services[room_name]
                 new_value = (old_value[0], old_value[1], False)
                 self.listening_services[room_name] = new_value
+                time.sleep(1)
 
     def reverse_listening_service_by_ref(self, ref):
         """
@@ -273,9 +274,7 @@ class client_h:
     def generateChatCommand(self, command_dict):
         command_string = ""
         for key, value in command_dict.iteritems():
-            key_s = str(key)
-            value_s = str(value)
-            command_string += key_s.strip() + ":"
-            command_string += value_s.strip() + "\n"
+            command_string += str(key) + ":"
+            command_string += str(value) + "\n"
         return command_string
 
