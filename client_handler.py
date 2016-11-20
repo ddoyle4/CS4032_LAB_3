@@ -206,7 +206,7 @@ class client_h:
         response_dict["SERVER_IP"] = self.server_info["host"]
         response_dict["PORT"] = self.server_info["port"]
         response_dict["ROOM_REF"] = ref
-        response_dict["JOIN_ID"] = self.client_id
+        response_dict["JOIN_ID"] = str(self.client_id)
 
         #inform chatroom of new member
         new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
