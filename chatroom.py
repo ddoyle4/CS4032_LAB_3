@@ -15,7 +15,6 @@ class chatroom_manager:
         self.rooms[room_name].add_new_message(client_handle, client_id, client_msg_string)
         
     def admin_add_new_message(self, room_name, msg):
-        print "ADMIN ADD NEW MESSAGE"
         self.rooms[room_name].add_new_message("SERVER ADMIN", "-1", msg)
 
     def get_new_messages(self, room_name, starting_id):
@@ -68,7 +67,6 @@ class chatroom:
         """
         Adds a new message to the chat room - operation is atomic
         """
-        print "ADDING NEW MESSAGE!!!"
         new_message = message(client_handle, client_id, client_msg_string, self.room_record_count)
         self.room_condition.acquire()       #SAFE SECTION START#
 
