@@ -238,6 +238,11 @@ class client_h:
             current_id += len(messages)
             
 
+            #check if leaving service
+            with self.listening_serices_lock:
+                if not self.listening_services[room_name][2]:
+                    running = False
+
             if running:        
                 #NOTE - sending each message individually like this would be wasteful if there
                 #were many messages here, but there should usually only be 1
@@ -251,10 +256,6 @@ class client_h:
                     response = self.generateChatCommand(command)
                     self.send_to_client(response)
 
-            #check if leaving service
-            with self.listening_serices_lock:
-                if not self.listening_services[room_name][2]:
-                    running = False
 
 
     #TODO move these methods to a new class that checks validity of messages
