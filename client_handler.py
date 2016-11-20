@@ -70,6 +70,8 @@ class client_h:
                     response = self.process_disconnect_command(args)
                 else:
                     #response = self.generate_error_message(1, "unrecognised command")
+                    print "unrecognised command"
+                    respond = ""
                     respond = False
                     #self.running = False
 
