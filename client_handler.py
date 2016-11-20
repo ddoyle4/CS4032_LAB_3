@@ -59,7 +59,7 @@ class client_h:
                     respond = True
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
-                    response = self.process_leave_command(args)
+                    response = "LEFT_CHATROOM: 1"#self.process_leave_command(args)
                     respond = True
                 elif client_msg.startswith("CHAT", 0, 4):
                     args = self.parseChatCommand(client_msg)
@@ -116,8 +116,8 @@ class client_h:
         self.stop_listening_service(room_name, args["CLIENT_NAME"])
         
         response_dict = collections.OrderedDict()
-        response_dict["LEFT_CHATROOM"] = "LEFT_CHATROOM:20"
-        response_dict["JOIN_ID"] = args["JOIN_ID"].strip()
+        response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
+        response_dict["JOIN_ID"] = args["JOIN_ID"]
         return self.generateChatCommand(response_dict).strip()
 
     def stop_listening_service(self, room_name, client_name):
