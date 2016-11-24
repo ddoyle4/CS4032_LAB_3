@@ -195,7 +195,7 @@ class client_h:
         #start a listening service
         new_listening_service = threading.Thread(
                 target=self.listen_to_chatroom, 
-                args=(ref, name, count+1)).start()
+                args=(ref, name, count)).start()
 
         #register listening service
         with self.listening_serices_lock:
