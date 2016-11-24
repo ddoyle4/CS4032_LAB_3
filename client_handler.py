@@ -258,6 +258,7 @@ class client_h:
                     command["MESSAGE"] = message.client_msg_value
 
                     response = self.generateChatCommand(command)
+                    print "sending this to client:\n----\n%s----\n"%(response)
                     self.send_to_client(response)
 
 
