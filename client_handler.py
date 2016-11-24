@@ -218,7 +218,9 @@ class client_h:
                 self.client_id, 
                 new_msg)
 
-        return self.generateChatCommand(response_dict)[:-1]
+        return_string = self.generateChatCommand(response_dict)[:-1]
+        print ":::::::::::", return_string
+        return return_string
 
 
     def send_to_client(self, msg):
