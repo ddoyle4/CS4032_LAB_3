@@ -217,6 +217,7 @@ class client_h:
                 args["CLIENT_NAME"], 
                 self.client_id, 
                 new_msg)
+            
 
         return self.generateChatCommand(response_dict)
 
