@@ -120,7 +120,7 @@ class client_h:
         
         response_dict = collections.OrderedDict()
         response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"] + "\n"
-        response_dict["JOIN_ID"] = args["JOIN_ID"]
+        response_dict["JOIN_ID"] = args["JOIN_ID"] + "\n"
         return self.generateChatCommand(response_dict).strip()
 
     def stop_listening_service(self, room_name, client_name):
