@@ -211,7 +211,7 @@ class client_h:
         response_dict["JOIN_ID"] = str(self.client_id)
 
         #inform chatroom of new member
-        new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
+        new_msg = "%s has joined this chatroom.\n\n"%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"], 
