@@ -141,7 +141,8 @@ class client_h:
             if self.listening_services[room_name][2]:
                 #inform chatroom
                 msg = "%s has left!"%client_name
-                self.cr_handler.admin_add_new_message(room_name, msg)
+                #self.cr_handler.admin_add_new_message(room_name, msg)
+                self.cr_handler.add_new_message(room_name, client_name, 2, msg)
                 time.sleep(1) 
                 #stop listening service
                 old_value = self.listening_services[room_name]
