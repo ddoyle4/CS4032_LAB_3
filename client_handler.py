@@ -124,8 +124,7 @@ class client_h:
         #response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
 
-        respond_string = "LEFT_CHATROOM:1"
-        respond_string += "JOIN_ID:1" + '\n'
+        respond_string = str("LEFT_CHATROOM:1\nJOIN_ID:1\n")
         return respond_string
 
     def stop_listening_service(self, room_name, client_name):
