@@ -124,9 +124,7 @@ class client_h:
         #response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
 
-        respond_string = "LEFT_CHATROOM:1\n\n\n\n\n\n\n\n" + '\n'
-        respond_string += '\n'
-        respond_string += "\n"
+        respond_string = "LEFT_CHATROOM:1"
         respond_string += "JOIN_ID:1" + '\n'
         return respond_string
 
