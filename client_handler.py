@@ -116,7 +116,6 @@ class client_h:
         Flushes any messages yet to be delivered to client and
         removes the listening_service for that client in that room
         """
-        room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
         
         #response_dict = collections.OrderedDict()
         #response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
@@ -129,6 +128,7 @@ class client_h:
         print "\n---"
 
         
+        room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
         self.stop_listening_service(room_name, args["CLIENT_NAME"])
         return respond_string
 
@@ -142,7 +142,7 @@ class client_h:
                 #inform chatroom
                 msg = "%s has left!"%client_name
                 self.cr_handler.admin_add_new_message(room_name, msg)
-
+                time.sleep(1) 
                 #stop listening service
                 old_value = self.listening_services[room_name]
                 new_value = (old_value[0], old_value[1], False)
