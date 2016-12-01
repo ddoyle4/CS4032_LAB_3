@@ -61,8 +61,7 @@ class client_h:
                     args = self.parseChatCommand(client_msg)
                     response = str(self.process_leave_command(args))
                     #response = response.strip()
-                    respond = True
-                    print "in ere dave"
+                    respond =  False
                 elif client_msg.startswith("CHAT", 0, 4):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_chat_command(args)
@@ -70,6 +69,7 @@ class client_h:
                 elif client_msg.startswith("DISCONNECT", 0, 10):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_disconnect_command(args)
+                    respond = False
                 else:
                     #response = self.generate_error_message(1, "unrecognised command")
                     print "unrecognised command"
@@ -117,7 +117,6 @@ class client_h:
         removes the listening_service for that client in that room
         """
         room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
-        self.stop_listening_service(room_name, args["CLIENT_NAME"])
         
         #response_dict = collections.OrderedDict()
         #response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
@@ -125,6 +124,12 @@ class client_h:
         #return self.generateChatCommand(response_dict).strip()
 
         respond_string = str("LEFT_CHATROOM:1\nJOIN_ID:2\n")
+        print "SPECTIAL LEAVE COMMAND SENDING\n----"
+        self.client_socket.send(respond_string)
+        print "\n---"
+
+        
+        self.stop_listening_service(room_name, args["CLIENT_NAME"])
         return respond_string
 
     def stop_listening_service(self, room_name, client_name):
