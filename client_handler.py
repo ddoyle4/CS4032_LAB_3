@@ -118,11 +118,11 @@ class client_h:
         room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
         self.stop_listening_service(room_name, args["CLIENT_NAME"])
         
-        response_dict = collections.OrderedDict()
+        #response_dict = collections.OrderedDict()
         response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
-        return "LEAVE_CHATROOM: 1\nJOIN_ID:1\n"
+        return "LEAVE_CHATROOM: 1%sJOIN_ID:1%s"%(str('\n'), str('\n'))
 
     def stop_listening_service(self, room_name, client_name):
         """

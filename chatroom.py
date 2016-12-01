@@ -105,7 +105,7 @@ class message:
     def __init__(self, client_handle, client_id, client_msg_string, count):
         self.client_handle = client_handle
         self.client_id = client_id
-        self.client_msg_value = client_msg_string + "\n"
+        self.client_msg_value = client_msg_string + "\n\n"
         self.client_msg_time = datetime.datetime.now()
         self.client_msg_id = count
 
