@@ -59,11 +59,8 @@ class client_h:
                     respond = True
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
-                    print "fuck 1"
                     response = str(self.process_leave_command(args))
-                    print "fuck 2"
                     response = response.strip()
-                    print "fuck 3"
                     respond = True
                     print "in ere dave"
                 elif client_msg.startswith("CHAT", 0, 4):
@@ -126,8 +123,8 @@ class client_h:
         #response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         #response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
-        respond_string = "LEAVE_CHATROOM:1\n\n"
-        respond_string += "JOIN_ID:1\n"
+        respond_string = "LEAVE_CHATROOM:1" + '\n'
+        respond_string += "JOIN_ID:1" + '\n'
         return respond_string
 
     def stop_listening_service(self, room_name, client_name):
