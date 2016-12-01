@@ -52,7 +52,7 @@ class client_h:
                     respond = True
                 elif client_msg == "KILL_SERVICE\n":
                     response = self.process_kill_service_command()
-                    respond = True
+                    respond = False
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
