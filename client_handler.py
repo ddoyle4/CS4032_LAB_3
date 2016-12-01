@@ -60,7 +60,7 @@ class client_h:
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
                     response = str(self.process_leave_command(args))
-                    response = response.strip()
+                    #response = response.strip()
                     respond = True
                     print "in ere dave"
                 elif client_msg.startswith("CHAT", 0, 4):
