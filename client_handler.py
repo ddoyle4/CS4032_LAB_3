@@ -126,7 +126,9 @@ class client_h:
         #response_dict["LEFT_CHATROOM"] = args["LEAVE_CHATROOM"]
         #response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
-        return "LEAVE_CHATROOM: 1%sJOIN_ID:1%s"%(str('\n'), str('\n'))
+        respond_string = "LEAVE_CHATROOM:1" + "\n"
+        respond_string += "JOIN_ID:1" + "\n"
+        return respond_string
 
     def stop_listening_service(self, room_name, client_name):
         """
@@ -143,7 +145,6 @@ class client_h:
                 old_value = self.listening_services[room_name]
                 new_value = (old_value[0], old_value[1], False)
                 self.listening_services[room_name] = new_value
-                time.sleep(1)
 
     def reverse_listening_service_by_ref(self, ref):
         """
