@@ -72,7 +72,6 @@ class chatroom:
 
         self.room_record.append(new_message)
         self.room_record_count += 1
-        print "adding new message and notifying all"
         self.room_condition.notifyAll()
         self.room_condition.release()       #SAFE SECTION END#
 
@@ -89,16 +88,17 @@ class chatroom:
         running_id = starting_id
         messages = []
 
-        self.room_condition.acquire()       #SAFE SECTION START#
+    #    self.room_condition.acquire()       #SAFE SECTION START#
         
         #will wait here until running_id < room_record_count - as notified
-        while (running_id >= self.room_record_count) and self.room_is_active:
-            self.room_condition.wait()
+     #   while (running_id >= self.room_record_count) and self.room_is_active:
+     #       self.room_condition.wait()
 
         for i in range(running_id, self.room_record_count):
             messages.append(self.room_record[i])
 
-        self.room_condition.release()       #SAFE SECTION END#
+
+      #  self.room_condition.release()       #SAFE SECTION END#
 
         return messages
 
