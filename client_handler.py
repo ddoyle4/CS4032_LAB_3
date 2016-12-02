@@ -123,7 +123,7 @@ class client_h:
         #return self.generateChatCommand(response_dict).strip()
 
         respond_string = str("LEFT_CHATROOM:%s\nJOIN_ID:%s\n"%(str(args["LEAVE_CHATROOM"]), args["JOIN_ID"]))
-        print "SPECTIAL LEAVE COMMAND SENDING\n----\nrespond_string\n---"
+        print "SPECTIAL LEAVE COMMAND SENDING\n----\n%s\n---"%respond_string
 
         self.client_socket.send(respond_string)
 
