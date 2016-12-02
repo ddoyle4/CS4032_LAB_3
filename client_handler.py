@@ -56,7 +56,7 @@ class client_h:
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
-                    respond = True
+                    respond = False
                 elif client_msg.startswith("LEAVE_CHATROOM", 0, 14):
                     args = self.parseChatCommand(client_msg)
                     response = str(self.process_leave_command(args))
@@ -222,8 +222,13 @@ class client_h:
         response_dict["ROOM_REF"] = ref
         response_dict["JOIN_ID"] = str(self.client_id)
 
+        resp = self.generateChatCommand(response_dict)
+        
+        print "sending this to client:\n----\n%s----\n"%(resp)
+        self.send_to_client(resp)
+
         #inform chatroom of new member
-        new_msg = "client1 has joined this chatroom."#%args["CLIENT_NAME"] 
+        new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"], 
@@ -231,7 +236,7 @@ class client_h:
                 new_msg)
             
 
-        return self.generateChatCommand(response_dict)
+        return ""
 
 
     def send_to_client(self, msg):
