@@ -122,7 +122,7 @@ class client_h:
         #response_dict["JOIN_ID"] = args["JOIN_ID"]
         #return self.generateChatCommand(response_dict).strip()
 
-        respond_string = str("LEFT_CHATROOM:1\nJOIN_ID:2\n")
+        respond_string = str("LEFT_CHATROOM:%s\nJOIN_ID:%s\n"%(str(args["LEAVE_CHATROOM"]), args["JOIN_ID"]))
         print "SPECTIAL LEAVE COMMAND SENDING\n----"
         self.client_socket.send(respond_string)
         print "\n---"
@@ -136,18 +136,27 @@ class client_h:
         """
         Stops the listening service for a particular room
         """
+        print "dave 1"
         with self.listening_serices_lock:
+            print "dave 2"
             
             if self.listening_services[room_name][2]:
+                print "dave 3"
                 #inform chatroom
                 msg = "%s has left!"%client_name
+                print "dave 4"
                 #self.cr_handler.admin_add_new_message(room_name, msg)
                 self.cr_handler.add_new_message(room_name, client_name, 2, msg)
-                time.sleep(1) 
-                #stop listening service
-                old_value = self.listening_services[room_name]
-                new_value = (old_value[0], old_value[1], False)
-                self.listening_services[room_name] = new_value
+                print "dave 5"
+                print "dave 6"
+
+        #allow message to propogate to the client
+        time.sleep(4)
+        with self.listening_serices_lock:
+            #stop listening service
+            old_value = self.listening_services[room_name]
+            new_value = (old_value[0], old_value[1], False)
+            self.listening_services[room_name] = new_value
 
     def reverse_listening_service_by_ref(self, ref):
         """

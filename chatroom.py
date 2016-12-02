@@ -72,6 +72,7 @@ class chatroom:
 
         self.room_record.append(new_message)
         self.room_record_count += 1
+        print "adding new message and notifying all"
         self.room_condition.notifyAll()
         self.room_condition.release()       #SAFE SECTION END#
 
@@ -105,7 +106,7 @@ class message:
     def __init__(self, client_handle, client_id, client_msg_string, count):
         self.client_handle = client_handle
         self.client_id = client_id
-        self.client_msg_value = client_msg_string + '\n'
+        self.client_msg_value = client_msg_string + '\n' + '\n'
         self.client_msg_time = datetime.datetime.now()
         self.client_msg_id = count
 
