@@ -123,9 +123,9 @@ class client_h:
         #return self.generateChatCommand(response_dict).strip()
 
         respond_string = str("LEFT_CHATROOM:%s\nJOIN_ID:%s\n"%(str(args["LEAVE_CHATROOM"]), args["JOIN_ID"]))
-        print "SPECTIAL LEAVE COMMAND SENDING\n----"
+        print "SPECTIAL LEAVE COMMAND SENDING\n----\nrespond_string\n---"
+
         self.client_socket.send(respond_string)
-        print "\n---"
 
         
         room_name = self.reverse_listening_service_by_ref(int(args["LEAVE_CHATROOM"]))
@@ -136,19 +136,13 @@ class client_h:
         """
         Stops the listening service for a particular room
         """
-        print "dave 1"
         with self.listening_serices_lock:
-            print "dave 2"
             
             if self.listening_services[room_name][2]:
-                print "dave 3"
                 #inform chatroom
                 msg = "%s has left!"%client_name
-                print "dave 4"
                 #self.cr_handler.admin_add_new_message(room_name, msg)
                 self.cr_handler.add_new_message(room_name, client_name, 2, msg)
-                print "dave 5"
-                print "dave 6"
 
         #allow message to propogate to the client
         time.sleep(4)
