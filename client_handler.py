@@ -267,6 +267,7 @@ class client_h:
             #check if leaving service
             with self.listening_serices_lock:
                 if not self.listening_services[room_name][2]:
+                    print "STOPPING LISTENING SERVICE"
                     running = False
 
             if running:        
