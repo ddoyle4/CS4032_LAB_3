@@ -160,15 +160,15 @@ class client_h:
 
     def process_kill_service_command(self):
         print("Kill Service Command!!!")		
-
+        """
         self.kill_service()
 
         #then set flag to let main thread know we want to quit
         with self.global_variables_lock:
             global kill_service_value
             kill_service_value = True
-
-        return "KILLING"
+        """
+        return " "
 
     def kill_service(self):
         self.running = False
