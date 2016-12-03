@@ -194,7 +194,7 @@ class client_h:
         return response
 
     def process_join_command(self, args):
-        time.sleep(1)
+        time.sleep(5)
 
         #join the chatroom
         (name, ref, count) = self.cr_handler.join_room(
