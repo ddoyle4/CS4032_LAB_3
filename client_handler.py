@@ -227,7 +227,7 @@ class client_h:
         self.send_to_client(resp)
 
         #inform chatroom of new member
-        time.sleep(1)
+        time.sleep(3)
         new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"], 
