@@ -232,7 +232,7 @@ class client_h:
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"].rstrip(), 
                 args["CLIENT_NAME"].rstrip(), 
-                self.client_id.rstrip(), 
+                self.client_id, 
                 new_msg.rstrip())
             
 
