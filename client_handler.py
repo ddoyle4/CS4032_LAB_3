@@ -143,14 +143,9 @@ class client_h:
         time.sleep(1)
         with self.listening_serices_lock:
             #stop listening service
-            print "STOPPING LISTENING SERVICE"
-            print "BEFORE STOP"
-            self.printListeningServices()
             old_value = self.listening_services[room_name]
             new_value = (old_value[0], old_value[1], False)
             self.listening_services[room_name] = new_value
-            print "AFTER STOP"
-            self.printListeningServices()
 
     def reverse_listening_service_by_ref(self, ref):
         """
@@ -205,11 +200,9 @@ class client_h:
                 args["JOIN_CHATROOM"], 
                 args["CLIENT_NAME"],
                 self.client_id)
-        print "dave 1"
 
         #register listening service
         with self.listening_serices_lock:
-            print "have lock"
             self.listening_services[name] = (int(ref), None, True)
 
         #start or restart a listening service
@@ -269,7 +262,6 @@ class client_h:
             #check if leaving service
             with self.listening_serices_lock:
                 if not self.listening_services[room_name][2]:
-                    print "SETTING RUNNING TO FALSE HERE"
                     running = False
 
             if running:        
