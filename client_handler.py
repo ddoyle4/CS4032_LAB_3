@@ -44,7 +44,7 @@ class client_h:
                 client_msg = self.client_socket.recv(65536)
                 response = ""
                 respond = True
-                if len(client_msg) > 2
+                if len(client_msg) > 2:
                     print "new client msg:\n----\n%s\n----\n"%(str(client_msg))
 
                 #TODO better regex checking
