@@ -194,7 +194,7 @@ class client_h:
         return response
 
     def process_join_command(self, args):
-        time.sleep(5)
+        time.sleep(1)
 
         #join the chatroom
         (name, ref, count) = self.cr_handler.join_room(
@@ -227,7 +227,7 @@ class client_h:
         self.send_to_client(resp)
 
         #inform chatroom of new member
-        time.sleep(1)
+        time.sleep(4)
         new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"].rstrip(), 
