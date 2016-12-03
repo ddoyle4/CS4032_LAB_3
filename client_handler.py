@@ -56,7 +56,7 @@ class client_h:
                     respond = False
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
                     print "-------------->>>>>>>>>>>>>>>>>>>>>>>>>>> SLEEPING"
-                    time.sleep(2.5)
+                    time.sleep(4)
 
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
