@@ -52,6 +52,7 @@ class client_h:
                     response = self.process_helo_command(client_msg)
                     respond = True
                 elif client_msg == "KILL_SERVICE\n":
+                    time.sleep(3)
                     response = self.process_kill_service_command()
                     respond = False
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
@@ -227,7 +228,7 @@ class client_h:
         self.send_to_client(resp)
 
         #inform chatroom of new member
-        time.sleep(4)
+        time.sleep(1)
         new_msg = "%s has joined this chatroom."%args["CLIENT_NAME"] 
         self.cr_handler.add_new_message(
                 args["JOIN_CHATROOM"].rstrip(), 
