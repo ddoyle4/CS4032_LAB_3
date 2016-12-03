@@ -141,7 +141,7 @@ class client_h:
                 self.cr_handler.add_new_message(room_name, client_name, 2, msg)
 
         #allow message to propogate to the client
-        time.sleep(1)
+        time.sleep(0.5)
         with self.listening_serices_lock:
             #stop listening service
             old_value = self.listening_services[room_name]
