@@ -52,10 +52,12 @@ class client_h:
                     response = self.process_helo_command(client_msg)
                     respond = True
                 elif client_msg == "KILL_SERVICE\n":
-                    time.sleep(3)
                     response = self.process_kill_service_command()
                     respond = False
                 elif client_msg.startswith("JOIN_CHATROOM", 0, 13):
+                    print "-------------->>>>>>>>>>>>>>>>>>>>>>>>>>> SLEEPING"
+                    time.sleep(2.5)
+
                     args = self.parseChatCommand(client_msg)
                     response = self.process_join_command(args)
                     respond = False
