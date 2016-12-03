@@ -21,9 +21,9 @@ hello="HELO text\n"
 kill="KILL_SERVICE\n"
 join2="JOIN_CHATROOM:room1\nCLIENT_IP:0\nPORT:0\nCLIENT_NAME:client1"
 #join="JOIN_CHATROOM: mychatroom\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: davetherave\n"
-leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: davetherave\n"
-message = "CHAT: %s\nJOIN_ID: 6666 \nCLIENT_NAME: davetherave\nMESSAGE: %s"
-disconnect = "DISCONNECT: 0\nPORT: 0\nCLIENT_NAME: davetherave"
+leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: client1\n"
+message = "CHAT: %s\nJOIN_ID: 6666 \nCLIENT_NAME: client1\nMESSAGE: %s"
+disconnect = "DISCONNECT: 0\nPORT: 0\nCLIENT_NAME: client1"
 anything = "ANYTHING 5828d335af7cc"
 
 # connection to hostname on the port.

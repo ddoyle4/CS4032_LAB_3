@@ -19,10 +19,10 @@ port = int(sys.argv[1])
 
 hello="HELO text\n"
 kill="KILL_SERVICE\n"
-join2="JOIN_CHATROOM:room1\nCLIENT_IP:0\nPORT:0\nCLIENT_NAME:client1"
+join2="JOIN_CHATROOM:room1\nCLIENT_IP:0\nPORT:0\nCLIENT_NAME:client2\n"
 #join="JOIN_CHATROOM: mychatroom\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: andrew\n"
-leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: andrew\n"
-message = "CHAT: %s\nJOIN_ID: 6667\nCLIENT_NAME: andrew\nMESSAGE: %s"
+leave="LEAVE_CHATROOM: %s\nJOIN_ID: 0\nCLIENT_NAME: client2\n"
+message = "CHAT: %s\nJOIN_ID: 6667\nCLIENT_NAME: client2\nMESSAGE: %s"
 
 # connection to hostname on the port.
 s.connect((host, port))                               

@@ -44,7 +44,8 @@ class client_h:
                 client_msg = self.client_socket.recv(65536)
                 response = ""
                 respond = True
-                print "new client msg:\n----\n%s\n----\n"%(str(client_msg))
+                if len(client_msg) > 2
+                    print "new client msg:\n----\n%s\n----\n"%(str(client_msg))
 
                 #TODO better regex checking
                 if client_msg.startswith("HELO ", 0, 5):
@@ -72,7 +73,7 @@ class client_h:
                     respond = False
                 else:
                     #response = self.generate_error_message(1, "unrecognised command")
-                    print "unrecognised command"
+                    #print "unrecognised command"
                     respond = ""
                     respond = False
                     #self.running = False
